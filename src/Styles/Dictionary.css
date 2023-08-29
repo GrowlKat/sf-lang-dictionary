@@ -1,0 +1,30 @@
+.invalid-input {
+    border-color: red;
+    animation: shake 0.5s ease-in-out;
+}
+
+.error-message {
+    display: flex;
+    position: absolute;
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+  
+@keyframes spawn {
+    0%, 100% {
+        transform: translateY(100%);
+    }
+}
+  
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25%, 75% {
+        transform: translateX(-10px);
+    }
+    50% {
+        transform: translateX(10px);
+    }
+}
