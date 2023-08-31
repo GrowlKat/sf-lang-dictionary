@@ -4,49 +4,31 @@ import "./Styles/Dictionary.css"
 import api from "./API"
 import { capitalize } from "./ExtensionMethods"
 
+/**
+ * Main page that let the user search for words
+ * @returns 
+ */
 function Dictionary() {
-    const [search, setSearch] = useState("")
-    const [validSearch, setValidSearch] = useState(true)
-    const [word, setWord] = useState(null)
-    const [shownWord, setShownWord] = useState(<></>)
-    const [errorMessage, setErrorMessage] = useState("")
+    const [search, setSearch] = useState("") // Search string captured at input
+    const [validSearch, setValidSearch] = useState(true) // Sets if should appear an error message
+    const [word, setWord] = useState(null) // Gets the object returned by the API
+    const [shownWord, setShownWord] = useState(<></>) // Show the data of the current word in application
+    const [errorMessage, setErrorMessage] = useState("") // Sets the error message shown if there's an error while searching a word
 
-    async function handleSubit(event) {
-        event.preventDefault()
-
-        let result = {}
-
-        if (search.trim() !== "") {
-            try {
-                result = await api.get(`/rootwords/getByWord/${search}`)
-                if (result !== "") {
-                    setValidSearch(true)
-                    setWord(result)
-                }
-                else {
-                    setValidSearch(false)
-                    setErrorMessage("Word not found, please try with another search")
-                }
-            }
-            catch {
-                setValidSearch(false)
-                setErrorMessage("Word not found, please try with another search")
-            }
-        }
-        else {
-            setValidSearch(false)
-            setErrorMessage("Please enter a search to find a word")
-        }
-    }
-
+    /**
+     * Update the word that sould be shown in application
+     * @param {*} wordObject The word object obtained by API
+     */
     function showWord(wordObject) {
-        let isEmpty = wordObject === null || wordObject === undefined
-        let rootword = "";
+        let isEmpty = wordObject === null || wordObject === undefined // The object is null or undefined?
+        let rootword = ""; // Initialize a string for trying to capitalizing the rootword in the object
 
-        rootword = typeof wordObject.rootword1 !== "" ? capitalize(wordObject.rootword1) : wordObject.rootword1
+        // If rootword in object is not empty, capitalizes it, if not, just sets the empty rootword
+        rootword = wordObject.rootword1 !== "" ? capitalize(wordObject.rootword1) : wordObject.rootword1
 
-        setValidSearch(search !== "" && !isEmpty)
+        setValidSearch(search !== "" && !isEmpty) // If search string and word object are empty, an error message is shown
 
+        // If word object is not empty, updates the shown word in application
         if (!isEmpty) {
             setShownWord(
                 <>
@@ -62,6 +44,39 @@ function Dictionary() {
         }
     }
 
+    async function handleSubit(event) {
+        event.preventDefault() // Prevents reloading the page
+
+        let result = {}
+
+        // Checks if search string is not empty, if it's not, try updating the word that the user searched, if not, an error message is shown
+        if (search.trim() !== "") {
+            try {
+                result = await api.get(`/Rootwords/GetByWord/${search}`) // Gets a word with the API by the search given by user
+                
+                // If result is not empty, cancel the error message and updates the word shown in application, if not, show a message error
+                if (result !== "") {
+                    setValidSearch(true)
+                    setWord(result)
+                }
+                else {
+                    setValidSearch(false)
+                    setErrorMessage("Word not found, please try with another search")
+                }
+            }
+            catch {
+                // When an exception is catched, automatically sets an error message 
+                setValidSearch(false)
+                setErrorMessage("Word not found, please try with another search")
+            }
+        }
+        else {
+            setValidSearch(false)
+            setErrorMessage("Please enter a search to find a word")
+        }
+    }
+
+    // The component to show words in application is initialized
     useEffect(() => {
         setShownWord(
             <>
@@ -73,6 +88,7 @@ function Dictionary() {
         )
     }, [])
 
+    // Updates the word shown in application is updated when word object is updated too
     useEffect(() => {
         if (word) showWord(word)
       }, [word]);
