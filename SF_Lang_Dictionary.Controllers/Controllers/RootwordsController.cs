@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SF_Lang_Dictionary;
 
 namespace SF_Lang_Dictionary.Controllers.Controllers
 {
@@ -35,7 +29,6 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Rootword>> GetRootword(int id)
         {
-
             if (_context.Rootwords == null)
             {
                 return NotFound();
@@ -45,6 +38,28 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
             if (rootword == null)
             {
                 return NotFound();
+            }
+
+            return rootword;
+        }
+
+        // GET: api/Rootwords/GetByWord/y
+        [HttpGet("GetByWord/{word}")]
+        public async Task<ActionResult<Rootword>> GetRootwordByWord(string word)
+        {
+            if (_context.Rootwords == null)
+            {
+                return NotFound();
+            }
+
+            // Tries to get an exact match of the word searched
+            var rootword = await _context.Rootwords.FirstOrDefaultAsync(r => r.Rootword1 != null && r.Rootword1.Equals(word));
+
+            if (rootword == null)
+            {
+                // If an exact match is not found, tries to search a word that contains the parameter string, if it's not found, returns a Not Found HTTP State
+                rootword = await _context.Rootwords.FirstOrDefaultAsync(r => r.Rootword1 != null && r.Rootword1.Contains(word));
+                return rootword is not null ? rootword : NotFound();
             }
 
             return rootword;

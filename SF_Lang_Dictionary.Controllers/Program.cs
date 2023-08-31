@@ -1,17 +1,17 @@
 using SF_Lang_Dictionary;
-using System.Configuration;
 using System.Text;
 
-Console.OutputEncoding = Encoding.Unicode;
+Console.OutputEncoding = Encoding.Unicode; // A conlang needs unicode to print special characters of it's writing system and IPA pronunciation characters
 
 var builder = WebApplication.CreateBuilder(args);
-var context = new SfLangContext();
 
+// Adds the DbContext in API services
 builder.Services.AddDbContext<SfLangContext>(options =>
 {
     var context = new SfLangContext();
 });
 
+// Adds CORS to API services
 builder.Services.AddCors(o =>
 {
     o.AddDefaultPolicy(p =>
@@ -36,8 +36,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
- app.UseHttpsRedirection();
 
+app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();
