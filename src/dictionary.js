@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react"
 import { CustomButton, CustomInput } from "./Components/StyledComponents"
 import "./Styles/Dictionary.css"
 import api from "./API"
-import { capitalize } from "./ExtensionMethods"
+import WordComponent from "./Components/WordComponent"
+import CharacterDropdown from "./Components/CharacterDropdown"
+import { MdOutlineEmojiSymbols } from "react-icons/md"
+import { BiSolidCaretDownCircle, BiSolidDownArrow } from "react-icons/bi"
 
 /**
  * Main page that let the user search for words
@@ -21,27 +24,8 @@ function Dictionary() {
      */
     function showWord(wordObject) {
         let isEmpty = wordObject === null || wordObject === undefined // The object is null or undefined?
-        let rootword = ""; // Initialize a string for trying to capitalizing the rootword in the object
-
-        // If rootword in object is not empty, capitalizes it, if not, just sets the empty rootword
-        rootword = wordObject.rootword1 !== "" ? capitalize(wordObject.rootword1) : wordObject.rootword1
-
         setValidSearch(search !== "" && !isEmpty) // If search string and word object are empty, an error message is shown
-
-        // If word object is not empty, updates the shown word in application
-        if (!isEmpty) {
-            setShownWord(
-                <>
-                <dl>
-                <dt key={"word" + wordObject.rootId}>{rootword}</dt>
-                    <dd key={"data" + wordObject.rootId}>
-                    Meaning: {wordObject.meaning}<br/>
-                    Pronunciation: {wordObject.pronunciation}
-                    </dd>
-                </dl>
-                </>
-            )
-        }
+        if (!isEmpty) setShownWord(<WordComponent wordObject={wordObject}/>) // If word object is not empty, updates the shown word in application
     }
 
     async function handleSubit(event) {
@@ -52,7 +36,7 @@ function Dictionary() {
         // Checks if search string is not empty, if it's not, try updating the word that the user searched, if not, an error message is shown
         if (search.trim() !== "") {
             try {
-                result = await api.get(`/Rootwords/GetByWord/${search}`) // Gets a word with the API by the search given by user
+                result = await api.get(`/Rootwords/GetByWord/${search.toLowerCase()}`) // Gets a word with the API by the search given by user
                 
                 // If result is not empty, cancel the error message and updates the word shown in application, if not, show a message error
                 if (result !== "") {
@@ -95,28 +79,39 @@ function Dictionary() {
 
     return(
         <>
-        <form onSubmit={handleSubit}>
-            <label>
-                Search for a word:<br/>
-                <CustomInput 
-                    backgroundColor={"white"} 
-                    transitionColor={"#9E9E9E"} 
-                    className={validSearch ? "" : "invalid-input"}
-                    value={search} placeholder="Enter the word to search about"
-                    onChange={(e) => setSearch(e.target.value)}/>
-            </label>
-            {!validSearch && <p className="error-message">{errorMessage}</p>}
-            <CustomButton 
-                borderColor={"black"} 
-                backgroundColor={"#162F94"} 
-                transitionColor={"#004ABF"} 
-                type="submit"
-            >
-                Search
-            </CustomButton>
-        </form>
-        <div>
-            { shownWord }
+        <div className="word-form">
+            <form onSubmit={handleSubit}>
+                <label>
+                    Search for a word:<br/>
+                    <CustomButton action="#"
+                        borderColor={"transparent"} 
+                        backgroundColor={"transparent"} 
+                        transitionColor={"transparent"} 
+                        style={{width: "48px", height: "48px", display: "inline-flex", alignItems: "center", justifyContent: "center", alignContent: "center", position: "relative", top: "4px"}}
+                        type="button"
+                    >
+                        <MdOutlineEmojiSymbols style={{width: "32px", height: "32px", zIndex: "1"}}/>
+                    </CustomButton>
+                    <BiSolidDownArrow style={{position: "absolute", top: "84px", left: "20px", width: "16px", height: "16px"}}/>
+                    <CustomInput 
+                        backgroundColor={"white"} 
+                        transitionColor={"#9E9E9E"} 
+                        className={validSearch ? "" : "invalid-input"}
+                        value={search} placeholder="Enter a word to search about"
+                        onChange={(e) => setSearch(e.target.value)}/>
+                    {/*<CharacterDropdown dropdownOpne={true}/>*/}
+                </label>
+                {!validSearch && <p className="error-message">{errorMessage}</p>}
+                <CustomButton 
+                    borderColor={"black"} 
+                    backgroundColor={"#162F94"} 
+                    transitionColor={"#004ABF"} 
+                    type="submit"
+                >
+                    Search
+                </CustomButton>
+            </form>
+            {shownWord}
         </div>
         </>
     )
