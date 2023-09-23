@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react"
 import { CustomButton, CustomInput } from "./Components/StyledComponents"
-import "./Styles/Dictionary.css"
-import api from "./API"
-import WordComponent from "./Components/WordComponent"
-import CharacterDropdown from "./Components/CharacterDropdown"
+import "./styles/Dictionary.css"
+import "./index.css"
+import "./App.css"
+import api from "./api/API"
+import WordComponent from "./components/WordComponent"
+import CharacterDropdown from "./components/CharacterDropdown"
 import { MdOutlineEmojiSymbols } from "react-icons/md"
 import { BiSolidCaretDownCircle, BiSolidDownArrow } from "react-icons/bi"
+import { BsLinkedin, BsGithub, BsTwitter } from "react-icons/bs"
 
 /**
  * Main page that let the user search for words
@@ -79,39 +82,52 @@ function Dictionary() {
 
     return(
         <>
-        <div className="word-form">
-            <form onSubmit={handleSubit}>
-                <label>
-                    Search for a word:<br/>
-                    <CustomButton action="#"
-                        borderColor={"transparent"} 
-                        backgroundColor={"transparent"} 
-                        transitionColor={"transparent"} 
-                        style={{width: "48px", height: "48px", display: "inline-flex", alignItems: "center", justifyContent: "center", alignContent: "center", position: "relative", top: "4px"}}
-                        type="button"
-                    >
-                        <MdOutlineEmojiSymbols style={{width: "32px", height: "32px", zIndex: "1"}}/>
-                    </CustomButton>
-                    <BiSolidDownArrow style={{position: "absolute", top: "84px", left: "20px", width: "16px", height: "16px"}}/>
-                    <CustomInput 
-                        backgroundColor={"white"} 
-                        transitionColor={"#9E9E9E"} 
-                        className={validSearch ? "" : "invalid-input"}
-                        value={search} placeholder="Enter a word to search about"
-                        onChange={(e) => setSearch(e.target.value)}/>
-                    {/*<CharacterDropdown dropdownOpne={true}/>*/}
-                </label>
-                {!validSearch && <p className="error-message">{errorMessage}</p>}
-                <CustomButton 
-                    borderColor={"black"} 
-                    backgroundColor={"#162F94"} 
-                    transitionColor={"#004ABF"} 
-                    type="submit"
-                >
-                    Search
-                </CustomButton>
-            </form>
-            {shownWord}
+        <div className="App">
+            <main className='App-main'>
+                <div className="word-form">
+                    <form onSubmit={handleSubit}>
+                        <label>
+                            Search for a word:<br/>
+                            <CustomButton action="#"
+                                borderColor={"transparent"} 
+                                backgroundColor={"transparent"} 
+                                transitionColor={"transparent"} 
+                                style={{width: "48px", height: "48px", display: "inline-flex", alignItems: "center", justifyContent: "center", alignContent: "center", position: "relative", top: "4px"}}
+                                type="button"
+                            >
+                                <MdOutlineEmojiSymbols style={{width: "32px", height: "32px", zIndex: "1"}}/>
+                            </CustomButton>
+                            <BiSolidDownArrow style={{position: "absolute", top: "84px", left: "20px", width: "16px", height: "16px"}}/>
+                            <CustomInput 
+                                backgroundColor={"white"} 
+                                transitionColor={"#9E9E9E"} 
+                                className={validSearch ? "" : "invalid-input"}
+                                value={search} placeholder="Enter a word to search about"
+                                onChange={(e) => setSearch(e.target.value)}/>
+                            {/*<CharacterDropdown dropdownOpne={true}/>*/}
+                        </label>
+                        {!validSearch && <p className="error-message">{errorMessage}</p>}
+                        <CustomButton 
+                            borderColor={"black"} 
+                            backgroundColor={"#162F94"} 
+                            transitionColor={"#004ABF"} 
+                            type="submit"
+                        >
+                            Search
+                        </CustomButton>
+                    </form>
+                    {shownWord}
+                </div>
+            </main>
+            
+            <footer className='App-footer'>
+                <ul>
+                <li>Developed by&nbsp;<b>Growl Kat</b></li>
+                <li>{<BsLinkedin/>}<a href='https://linkedin.com/in/growlkat'>/in/growlkat</a></li>
+                <li>{<BsGithub/>}<a href='https://github.com/GrowlKat'>/GrowlKat</a></li>
+                <li>{<BsTwitter/>}<a href='https://twitter.com/Growl_Kat'>@Growl_Kat</a></li>
+                </ul>
+            </footer>
         </div>
         </>
     )

@@ -1,4 +1,4 @@
-import { capitalize } from "../ExtensionMethods";
+import { capitalize } from "../ExtensionMethods"
 
 /**
  * Render a component that show a word info
