@@ -13,5 +13,5 @@ public partial class Maintype
 
     public virtual ICollection<Subtype> Subtypes { get; set; } = new List<Subtype>();
 
-    public virtual ICollection<Suffix> Suffixes { get; set; } = new List<Suffix>();
+    public ICollection<Suffix> Suffixes { get; set; } = new List<Suffix>();
 }

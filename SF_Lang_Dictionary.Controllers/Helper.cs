@@ -21,6 +21,16 @@ public static class Helper
     public static char[] SpecialCharacters { get => "āĀēĒīĪōŌūŪäÄöÖüÜþÞðÐʊθɑɨʦʤʃɔøɛ".ToCharArray(); }
 
     /// <summary>
+    /// Char array with all the special characters used in wrting
+    /// </summary>
+    public static char[] SpecialWritingCharacters { get => "āĀēĒīĪōŌūŪäÄöÖüÜþÞðÐ".ToCharArray(); }
+
+    /// <summary>
+    /// Char array with all the special characters used in IPA pronunciation
+    /// </summary>
+    public static char[] SpecialIPACharacters { get => "ðÐʊθɑɨʦʤʃɔøɛ".ToCharArray(); }
+
+    /// <summary>
     /// Capitalizes a word by putting it's first character as a mayus
     /// </summary>
     /// <param name="s">The string to be capitalized</param>
@@ -50,4 +60,107 @@ public static class Helper
         }
         return endInVocal;
     }
+
+    /// <summary>
+    /// Maps a character to it's IPA pronunciation
+    /// </summary>
+    /// <param name="s"></param>
+    /// <returns></returns>
+    public static string MapToIPA(this string s)
+    {
+        string res = "";
+        // TODO: Add all the special characters to the switch and fix it's way to find characters
+        foreach (char c in s)
+        {
+            switch (s)
+            {
+                case "ð":
+                    res += "ð";
+                    break;
+                case "Ð":
+                    res += "ð";
+                    break;
+                case "þ":
+                    res += "θ";
+                    break;
+                case "Þ":
+                    res += 'θ';
+                    break;
+                case "ū":
+                    res += 'ʊ';
+                    break;
+                case "Ū":
+                    res += 'ʊ';
+                    break;
+                case "ä":
+                    res += 'ɑ';
+                    break;
+                case "Ä":
+                    res += 'ɑ';
+                    break;
+                case "ī":
+                    res += 'ɨ';
+                    break;
+                case "Ī":
+                    res += 'ɨ';
+                    break;
+                case "tz":
+                    res += 'ʦ';
+                    break;
+                case "j":
+                    res += 'ʤ';
+                    break;
+                case "sh":
+                    res += 'ʃ';
+                    break;
+                case "ō":
+                    res += 'ɔ';
+                    break;
+                case "Ō":
+                    res += 'ɔ';
+                    break;
+                case "ö":
+                    res += 'ø';
+                    break;
+                case "Ö":
+                    res += 'ø';
+                    break;
+                case "ē":
+                    res += 'ɛ';
+                    break;
+                case "Ē":
+                    res += 'ɛ';
+                    break;
+                default:
+                    break;
+            }
+        }
+        return res;
+    }
+}
+
+public enum Case
+{
+    Nominative,
+    Accusative,
+    Dative,
+    Genitive
+}
+
+public enum Declination
+{
+    Strong = 1,
+    Soft = 2
+}
+
+public enum MaintypeEnum
+{
+    Noun,
+    Verb,
+    Adjective,
+    Adverb,
+    Pronoun,
+    Preposition,
+    Conjunction,
+    Interjection,
 }

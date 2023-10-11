@@ -1,5 +1,8 @@
 using SF_Lang_Dictionary;
 using System.Text;
+using Newtonsoft.Json;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.AspNetCore.Mvc;
 
 Console.OutputEncoding = Encoding.Unicode; // A conlang needs unicode to print special characters of it's writing system and IPA pronunciation characters
 
@@ -21,6 +24,11 @@ builder.Services.AddCors(o =>
         .AllowAnyMethod()
         .AllowCredentials();
     });
+});
+
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
 });
 
 // Add services to the container.

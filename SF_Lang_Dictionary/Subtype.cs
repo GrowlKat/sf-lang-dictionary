@@ -15,5 +15,5 @@ public partial class Subtype
 
     public virtual Prefix? Prefix { get; set; }
 
-    public virtual ICollection<Suffix> Suffixes { get; set; } = new List<Suffix>();
+    public ICollection<Suffix> Suffixes { get; set; } = new List<Suffix>();
 }

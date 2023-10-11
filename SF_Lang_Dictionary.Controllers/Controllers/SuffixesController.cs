@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SF_Lang_Dictionary;
+using SF_Lang_Dictionary.Controllers.Schemas;
 
 namespace SF_Lang_Dictionary.Controllers.Controllers
 {
@@ -47,6 +48,39 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
             }
 
             return suffix;
+        }
+
+        // GET: api/Suffixes/5
+        [HttpGet("GetByDeclination/{declination}")]
+        public async Task<ActionResult<IEnumerable<Suffix>>> GetSuffixByDeclination(Declination declination)
+        {
+            if (_context.Suffixes == null)
+            {
+                return NotFound();
+            }
+
+            List<SuffixSchema> sfxs = new();
+            var res = await _context.Suffixes.Where(s => s.MtpId == Convert.ToInt32(declination)).ToListAsync();
+
+            if (res == null)
+            {
+                return NotFound("Cases not found");
+            }
+            /*else
+            {
+                res = _context.Suffixes.Include(sfx => sfx.Mtp).ToList();
+                
+                for (int i = 0; i < res.Count; i++)
+                {
+                    sfxs.Add(new() { SfxId = res[i].SfxId, Suffix1 = res[i].Suffix1, Mtp = res[i].Mtp?.Maintype1, Stp = res[i].Stp?.Subtype1 });
+                    Console.WriteLine(sfxs[i].SfxId);
+                    Console.WriteLine(sfxs[i].Suffix1);
+                    Console.WriteLine(sfxs[i].Mtp);
+                    Console.WriteLine(sfxs[i].Stp);
+                }
+            }*/
+
+            return res;
         }
 
         // PUT: api/Suffixes/5

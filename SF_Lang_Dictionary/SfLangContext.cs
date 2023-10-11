@@ -14,6 +14,7 @@ public partial class SfLangContext : DbContext
     public SfLangContext(DbContextOptions<SfLangContext> options)
         : base(options)
     {
+        //ChangeTracker.LazyLoadingEnabled = false;
     }
 
     public virtual DbSet<Maintype> Maintypes { get; set; }
