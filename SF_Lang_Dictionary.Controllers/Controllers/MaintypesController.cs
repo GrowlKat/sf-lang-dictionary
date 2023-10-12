@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SF_Lang_Dictionary;
+using SF_Lang_Dictionary.Models;
 
 namespace SF_Lang_Dictionary.Controllers.Controllers
 {

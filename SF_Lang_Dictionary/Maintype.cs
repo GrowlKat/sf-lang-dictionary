@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SF_Lang_Dictionary;
+namespace SF_Lang_Dictionary.Models;
 
 public partial class Maintype
 {
@@ -11,7 +11,5 @@ public partial class Maintype
 
     public virtual ICollection<Prefix> Prefixes { get; set; } = new List<Prefix>();
 
-    public virtual ICollection<Subtype> Subtypes { get; set; } = new List<Subtype>();
-
-    public ICollection<Suffix> Suffixes { get; set; } = new List<Suffix>();
+    public virtual ICollection<Suffix> Suffixes { get; set; } = new List<Suffix>();
 }

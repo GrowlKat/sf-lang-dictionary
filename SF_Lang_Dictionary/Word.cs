@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SF_Lang_Dictionary;
+namespace SF_Lang_Dictionary.Models;
 
 public partial class Word
 {

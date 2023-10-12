@@ -5,8 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SF_Lang_Dictionary;
-using SF_Lang_Dictionary.Controllers.Schemas;
+using SF_Lang_Dictionary.Models;
 
 namespace SF_Lang_Dictionary.Controllers.Controllers
 {
@@ -25,10 +24,10 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Suffix>>> GetSuffixes()
         {
-          if (_context.Suffixes == null)
-          {
-              return NotFound();
-          }
+            if (_context.Suffixes == null)
+            {
+                return NotFound();
+            }
             return await _context.Suffixes.ToListAsync();
         }
 
@@ -36,10 +35,10 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Suffix>> GetSuffix(int id)
         {
-          if (_context.Suffixes == null)
-          {
-              return NotFound();
-          }
+            if (_context.Suffixes == null)
+            {
+                return NotFound();
+            }
             var suffix = await _context.Suffixes.FindAsync(id);
 
             if (suffix == null)
@@ -51,34 +50,38 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         }
 
         // GET: api/Suffixes/5
-        [HttpGet("GetByDeclination/{declination}")]
-        public async Task<ActionResult<IEnumerable<Suffix>>> GetSuffixByDeclination(Declination declination)
+        [HttpGet("GetByDeclension/{declension}")]
+        public async Task<ActionResult<IEnumerable<Suffix>>> GetSuffixByDeclination(Declension declension)
         {
             if (_context.Suffixes == null)
             {
                 return NotFound();
             }
 
-            List<SuffixSchema> sfxs = new();
-            var res = await _context.Suffixes.Where(s => s.MtpId == Convert.ToInt32(declination)).ToListAsync();
+            // Gets all the suffixes and their maintypes and subtypes
+            // Only gets the suffixes that matches the declension and only gets the maintype and subtype ids and names
+            var res = await _context.Suffixes
+                    .Select(s => new Suffix()
+                    {
+                        SfxId = s.SfxId, // Id of the suffix
+                        Suffix1 = s.Suffix1, // Suffix
+                        MtpId = s.MtpId, // Id of the maintype
+                        Mtp = new Maintype() // Sets the maintype as a new object
+                        {
+                            MtpId = s.Mtp != null ? s.Mtp.MtpId : default, // Id of the maintype
+                            Maintype1 = s.Mtp != null ? s.Mtp.Maintype1 : null // Name of the maintype
+                        },
+                        Stp = new Subtype() // Sets the subtype as a new object
+                        {
+                            StpId = s.Stp != null ? s.Stp.StpId : default, // Id of the subtype
+                            Subtype1 = s.Stp != null ? s.Stp.Subtype1 : null // Name of the subtype
+                        }
+                    })
+                    .Where(s => s.MtpId == Convert.ToInt32(declension)) // Only gets the suffixes that matches the declension
+                    .ToListAsync();
 
-            if (res == null)
-            {
-                return NotFound("Cases not found");
-            }
-            /*else
-            {
-                res = _context.Suffixes.Include(sfx => sfx.Mtp).ToList();
-                
-                for (int i = 0; i < res.Count; i++)
-                {
-                    sfxs.Add(new() { SfxId = res[i].SfxId, Suffix1 = res[i].Suffix1, Mtp = res[i].Mtp?.Maintype1, Stp = res[i].Stp?.Subtype1 });
-                    Console.WriteLine(sfxs[i].SfxId);
-                    Console.WriteLine(sfxs[i].Suffix1);
-                    Console.WriteLine(sfxs[i].Mtp);
-                    Console.WriteLine(sfxs[i].Stp);
-                }
-            }*/
+            // If the result is null, return not found
+            if (res == null) return NotFound("Cases not found");
 
             return res;
         }

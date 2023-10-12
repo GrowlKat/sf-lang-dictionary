@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace SF_Lang_Dictionary;
+namespace SF_Lang_Dictionary.Models;
 
 public partial class SfLangContext : DbContext
 {
@@ -14,7 +14,6 @@ public partial class SfLangContext : DbContext
     public SfLangContext(DbContextOptions<SfLangContext> options)
         : base(options)
     {
-        //ChangeTracker.LazyLoadingEnabled = false;
     }
 
     public virtual DbSet<Maintype> Maintypes { get; set; }
@@ -40,7 +39,7 @@ public partial class SfLangContext : DbContext
         {
             entity.HasKey(e => e.MtpId).HasName("PK__MAINTYPE__611BAFF4BAF54B15");
 
-            entity.ToTable("MAINTYPE");
+            entity.ToTable("MAINTYPES");
 
             entity.HasIndex(e => e.Maintype1, "UQ__MAINTYPE__94737515934264F4").IsUnique();
 
@@ -55,7 +54,7 @@ public partial class SfLangContext : DbContext
         {
             entity.HasKey(e => e.PfxId).HasName("PK__PREFIX__BEC707993B9A2F92");
 
-            entity.ToTable("PREFIX");
+            entity.ToTable("PREFIXES");
 
             entity.HasIndex(e => e.StpId, "UQ__PREFIX__28DB520FA5CBDF74").IsUnique();
 
@@ -82,7 +81,7 @@ public partial class SfLangContext : DbContext
         {
             entity.HasKey(e => e.RootId).HasName("PK__ROOTWORD__CD85A0350B3EFB47");
 
-            entity.ToTable("ROOTWORD");
+            entity.ToTable("ROOTWORDS");
 
             entity.Property(e => e.RootId).HasColumnName("root_id");
             entity.Property(e => e.Meaning)
@@ -107,25 +106,20 @@ public partial class SfLangContext : DbContext
         {
             entity.HasKey(e => e.StpId).HasName("PK__SUBTYPE__28DB520EF66363DD");
 
-            entity.ToTable("SUBTYPE");
+            entity.ToTable("SUBTYPES");
 
             entity.Property(e => e.StpId).HasColumnName("stp_id");
-            entity.Property(e => e.MtpId).HasColumnName("mtp_id");
             entity.Property(e => e.Subtype1)
                 .HasMaxLength(100)
                 .IsUnicode(false)
                 .HasColumnName("subtype");
-
-            entity.HasOne(d => d.Mtp).WithMany(p => p.Subtypes)
-                .HasForeignKey(d => d.MtpId)
-                .HasConstraintName("FK__SUBTYPE__mtp_id__74AE54BC");
         });
 
         modelBuilder.Entity<Suffix>(entity =>
         {
             entity.HasKey(e => e.SfxId).HasName("PK__SUFFIX__3FA9CCF494D93175");
 
-            entity.ToTable("SUFFIX");
+            entity.ToTable("SUFFIXES");
 
             entity.HasIndex(e => new { e.MtpId, e.SfxId }, "SFX_UNIQUE").IsUnique();
 
@@ -148,7 +142,9 @@ public partial class SfLangContext : DbContext
 
         modelBuilder.Entity<Word>(entity =>
         {
-            entity.ToTable("WORD");
+            entity.HasKey(e => e.WordId).HasName("PK_WORD");
+
+            entity.ToTable("WORDS");
 
             entity.HasIndex(e => e.WordId, "IX_WORD");
 

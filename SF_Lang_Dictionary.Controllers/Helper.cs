@@ -13,7 +13,7 @@ public static class Helper
     /// <summary>
     /// Char array with all the consonants
     /// </summary>
-    public static char[] Consonants { get => "fFþÞðÐrRkKgGwWhHnNjJpPbBsSzZtTmMlL".ToCharArray(); }
+    public static char[] Consonants { get => "fFþÞðÐrRkKgGwWhHnNjJpPbBsSzZtTdDmMlL".ToCharArray(); }
 
     /// <summary>
     /// Char array with all the special characters
@@ -28,7 +28,12 @@ public static class Helper
     /// <summary>
     /// Char array with all the special characters used in IPA pronunciation
     /// </summary>
-    public static char[] SpecialIPACharacters { get => "ðÐʊθɑɨʦʤʃɔøɛ".ToCharArray(); }
+    public static char[] IPACharacters { get => "fvuʊyθðaɑrkgwxhniɨjʦʤpbsztdmlʃoɔøeɛː'.".ToCharArray(); }
+
+    /// <summary>
+    /// Char array with all the special characters used in IPA pronunciation
+    /// </summary>
+    public static char[] SpecialIPACharacters { get => "ðÐʊθɑɨʦʤʃɔøɛː".ToCharArray(); }
 
     /// <summary>
     /// Capitalizes a word by putting it's first character as a mayus
@@ -139,6 +144,9 @@ public static class Helper
     }
 }
 
+/// <summary>
+/// All the cases that a word can have
+/// </summary>
 public enum Case
 {
     Nominative,
@@ -147,12 +155,18 @@ public enum Case
     Genitive
 }
 
-public enum Declination
+/// <summary>
+/// All the declensions that a word can have
+/// </summary>
+public enum Declension
 {
     Strong = 1,
     Soft = 2
 }
 
+/// <summary>
+/// Enumerates the type of words
+/// </summary>
 public enum MaintypeEnum
 {
     Noun,

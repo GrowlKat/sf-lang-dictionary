@@ -1,10 +1,9 @@
-using SF_Lang_Dictionary;
 using System.Text;
 using Newtonsoft.Json;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Mvc;
+using SF_Lang_Dictionary.Models;
 
-Console.OutputEncoding = Encoding.Unicode; // A conlang needs unicode to print special characters of it's writing system and IPA pronunciation characters
+// A conlang needs unicode to print special characters of it's writing system latinization and IPA pronunciation characters
+Console.OutputEncoding = Encoding.Unicode;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +25,7 @@ builder.Services.AddCors(o =>
     });
 });
 
+// Adds NewtonsoftJson to API services, making JSON easier to work with
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
