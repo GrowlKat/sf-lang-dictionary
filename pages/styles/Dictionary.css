@@ -1,6 +1,12 @@
 .word-form {
     position: absolute;
-    top: 30%;
+    top: 25%;
+}
+
+.word-searchbar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .invalid-input {
@@ -13,7 +19,9 @@
     position: absolute;
     color: red;
     font-size: 14px;
-    margin-top: 5px;
+    margin-top: 4px;
+    justify-content: center;
+    left: 80px;
 }
   
 @keyframes spawn {

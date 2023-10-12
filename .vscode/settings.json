@@ -1,0 +1,20 @@
+{
+    "sqltools.connections": [
+        {
+            "mssqlOptions": {
+                "appName": "SQLTools",
+                "useUTC": true,
+                "encrypt": true,
+                "instanceName": "MSSQLSERVER"
+            },
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 1433,
+            "driver": "MSSQL",
+            "name": "SF_Lang",
+            "password": "Gcc0407@",
+            "database": "SF_Lang",
+            "username": "Growl Kat"
+        }
+    ]
+}
