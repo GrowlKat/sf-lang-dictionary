@@ -4,7 +4,7 @@ const nextConfig = {
         reactStrictMode: true,
         styledComponents: true
     },
-    output: "standalone",
+    output: "export",
 }
 
 module.exports = nextConfig
