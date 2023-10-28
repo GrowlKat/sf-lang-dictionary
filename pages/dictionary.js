@@ -1,15 +1,15 @@
 import React, { useState, useEffect, useRef } from "react"
-import { CustomButton, CustomInput } from "./components/CustomComponents"
+import { CustomButton, CustomInput } from "../components/CustomComponents"
 import "./styles/Dictionary.css"
 import "./index.css"
 import "./App.css"
-import api from "./api/API"
-import WordComponent from "./components/WordComponent"
-import CharacterDropdown from "./components/CharacterDropdown"
+import api from "../api/API"
+import WordComponent from "../components/WordComponent"
+import CharacterDropdown from "../components/CharacterDropdown"
 import { BiSolidDownArrow } from "react-icons/bi"
 import { RiKeyboardLine } from "react-icons/ri"
 import { BsLinkedin, BsGithub, BsTwitter } from "react-icons/bs"
-import { checkIfVocal } from "./Utils"
+import { checkIfVocal } from "../Utils"
 
 /**
  * Main page that let the user search for words
