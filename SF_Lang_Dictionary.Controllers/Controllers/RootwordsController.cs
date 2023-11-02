@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SF_Lang_Dictionary.Models;
 
@@ -16,7 +18,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         }
 
         // GET: api/Rootwords
-        [HttpGet]
+        [HttpGet, Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<IEnumerable<Rootword>>> GetRootwords()
         {
             if (_context.Rootwords == null)
