@@ -28,10 +28,11 @@ public partial class SfLangContext : DbContext
 
     public virtual DbSet<Word> Words { get; set; }
 
-    private readonly IConfiguration config = new ConfigurationBuilder().AddUserSecrets("9f02d6ac-83b3-44e5-9341-cb1a1f92633c").Build();
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer(config.GetConnectionString("conn"));
+    {
+        Console.WriteLine(Environment.GetEnvironmentVariable("SFConn"));
+        optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("SFConn"));
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

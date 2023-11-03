@@ -3,9 +3,12 @@ using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
 
 namespace SF_Lang_Dictionary.Controllers.Auth;
+
+/// <summary>
+/// Initializes an Azure Key Vault client
+/// </summary>
 public class SecretManager
 {
-    IConfiguration config = new ConfigurationBuilder().AddUserSecrets("2f781bee-b429-4f52-a84d-3f36352c147c").Build();
     private readonly SecretClient client;
     private readonly SecretClientOptions options = new()
     {
@@ -18,12 +21,19 @@ public class SecretManager
         }
     };
 
+    /// <summary>
+    /// Gets the Azure Key Vault client
+    /// </summary>
     public SecretClient Client { get => client; }
 
+    /// <summary>
+    /// Initializes an Azure Key Vault client
+    /// </summary>
     public SecretManager()
     {
+        // Initialize Azure Key Vault client with the URI and credentials
         client = new(new Uri(
-            config.GetValue<string>("VaultUri") ?? throw new("Vault URI not found")),
+            Environment.GetEnvironmentVariable("VaultUri") ?? throw new("Vault URI not found")),
             new DefaultAzureCredential(new DefaultAzureCredentialOptions() { ExcludeAzurePowerShellCredential = true }),
             options
         );

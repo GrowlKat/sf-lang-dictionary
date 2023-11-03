@@ -11,17 +11,18 @@ using SF_Lang_Dictionary.Controllers.Auth;
 // A conlang needs unicode to print special characters of it's writing system latinization and IPA pronunciation characters
 Console.OutputEncoding = Encoding.Unicode;
 
-IConfiguration config = new ConfigurationBuilder().AddUserSecrets("2f781bee-b429-4f52-a84d-3f36352c147c").Build();
 var builder = WebApplication.CreateBuilder(args);
-var keyVaultEndpoint = new Uri(config.GetValue<string>("VaultUri") ?? throw new("Vault URI not found"));
+
+// Initialize Azure Key Vault
+var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("VaultUri") ?? throw new("Vault URI not found"));
 var tokenCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeAzurePowerShellCredential = true });
 SecretManager secretManager = new();
-string signatureKey = secretManager.Client.GetSecret("signatureKey").Value.Value;
-List<string> origins = new()
-{
-    config.GetValue<string>("issuer") ?? throw new("Origins not found"),
-    config.GetValue<string>("audience") ?? throw new("Origins not found")
-};
+
+// Initialize JWT
+string signatureKey = secretManager.Client.GetSecret("signatureKey").Value.Value ?? throw new("Signature Key not found");
+string issuer = secretManager.Client.GetSecret("issuer").Value.Value ?? throw new("Issuer not found");
+string audience = secretManager.Client.GetSecret("audience").Value.Value ?? throw new("Issuer not found");
+List<string> origins = new() { issuer, audience };
 
 IdentityModelEventSource.ShowPII = true;
 
@@ -59,9 +60,9 @@ builder.Services
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = config.GetValue<string>("issuer"),
-            ValidAudience = config.GetValue<string>("audience"),
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signatureKey ?? throw new("Signature Key not found")))
+            ValidIssuer = issuer,
+            ValidAudience = audience,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(signatureKey))
         };
     });
 
