@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SF_Lang_Dictionary.Controllers;
 namespace SF_Lang_Dictionary.Controllers.Controllers
 {
@@ -37,19 +39,19 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         }
 
         // POST api/<MiscController>
-        [HttpPost]
+        [HttpPost, Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public void Post([FromBody] string value)
         {
         }
 
         // PUT api/<MiscController>/5
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public void Put(int id, [FromBody] string value)
         {
         }
 
         // DELETE api/<MiscController>/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public void Delete(int id)
         {
         }

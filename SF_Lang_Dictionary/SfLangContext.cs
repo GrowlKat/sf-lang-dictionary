@@ -30,7 +30,6 @@ public partial class SfLangContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        Console.WriteLine(Environment.GetEnvironmentVariable("SFConn"));
         optionsBuilder.UseSqlServer(Environment.GetEnvironmentVariable("SFConn"));
     }
 

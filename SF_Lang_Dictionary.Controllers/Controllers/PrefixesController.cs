@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -52,7 +54,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
 
         // PUT: api/Prefixes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> PutPrefix(int id, Prefix prefix)
         {
             if (id != prefix.PfxId)
@@ -83,7 +85,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
 
         // POST: api/Prefixes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Prefix>> PostPrefix(Prefix prefix)
         {
           if (_context.Prefixes == null)
@@ -97,7 +99,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         }
 
         // DELETE: api/Prefixes/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeletePrefix(int id)
         {
             if (_context.Prefixes == null)

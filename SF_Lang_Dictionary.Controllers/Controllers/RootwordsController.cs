@@ -18,7 +18,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         }
 
         // GET: api/Rootwords
-        [HttpGet, Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<Rootword>>> GetRootwords()
         {
             if (_context.Rootwords == null)
@@ -70,7 +70,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
 
         // PUT: api/Rootwords/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> PutRootword(int id, Rootword rootword)
         {
             if (id != rootword.RootId)
@@ -101,7 +101,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
 
         // POST: api/Rootwords
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Rootword>> PostRootword(Rootword rootword)
         {
           if (_context.Rootwords == null)
@@ -115,7 +115,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         }
 
         // DELETE: api/Rootwords/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteRootword(int id)
         {
             if (_context.Rootwords == null)

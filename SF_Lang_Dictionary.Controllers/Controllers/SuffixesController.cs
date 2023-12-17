@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -88,7 +90,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
 
         // PUT: api/Suffixes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> PutSuffix(int id, Suffix suffix)
         {
             if (id != suffix.SfxId)
@@ -119,7 +121,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
 
         // POST: api/Suffixes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Suffix>> PostSuffix(Suffix suffix)
         {
           if (_context.Suffixes == null)
@@ -133,7 +135,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         }
 
         // DELETE: api/Suffixes/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteSuffix(int id)
         {
             if (_context.Suffixes == null)

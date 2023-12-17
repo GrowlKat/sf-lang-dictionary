@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -52,7 +54,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
 
         // PUT: api/Subtypes/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        [HttpPut("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> PutSubtype(int id, Subtype subtype)
         {
             if (id != subtype.StpId)
@@ -83,7 +85,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
 
         // POST: api/Subtypes
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        [HttpPost, Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Subtype>> PostSubtype(Subtype subtype)
         {
           if (_context.Subtypes == null)
@@ -97,7 +99,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         }
 
         // DELETE: api/Subtypes/5
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<IActionResult> DeleteSubtype(int id)
         {
             if (_context.Subtypes == null)
