@@ -1,12 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     compiler: {
-        reactStrictMode: true,
-        styledComponents: true
+      reactStrictMode: true,
+      styledComponents: true
     },
-    output: "export",
-}
-const withSvgr = require('next-svgr');
-
-module.exports = nextConfig
-module.exports = withSvgr()
+    output: 'export',
+  };
+  
+  const withSvgr = require('next-svgr');
+  const withPlugins = require('next-compose-plugins');
+  
+  module.exports = withPlugins([withSvgr], nextConfig);
+  
