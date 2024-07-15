@@ -35,11 +35,20 @@ public static class Helper
     /// </summary>
     public static char[] SpecialIPACharacters { get => "ðÐʊθɑɨʦʤʃɔøɛː".ToCharArray(); }
 
+    public static Dictionary<string, string> AvailableLanguages
+    {
+        get => new()
+        {
+            { "sf", "Selenian" },
+            { "en", "English" },
+        };
+    }
+
     /// <summary>
     /// Capitalizes a word by putting it's first character as a mayus
     /// </summary>
     /// <param name="s">The string to be capitalized</param>
-    /// <returns></returns>
+    /// <returns>The capitalized string</returns>
     public static string Capitalize(this string s)
     {
         return s[0].ToString().ToUpper() + s[..1];
@@ -93,9 +102,25 @@ public static class Helper
                     break;
                 case "ū":
                     res += 'ʊ';
+                    res += 'ː';
                     break;
                 case "Ū":
                     res += 'ʊ';
+                    res += 'ː';
+                    break;
+                case "ü":
+                    res += 'y';
+                    break;
+                case "Ü":
+                    res += 'y';
+                    break;
+                case "ā":
+                    res += 'a';
+                    res += 'ː';
+                    break;
+                case "Ā":
+                    res += 'a';
+                    res += 'ː';
                     break;
                 case "ä":
                     res += 'ɑ';
@@ -104,25 +129,44 @@ public static class Helper
                     res += 'ɑ';
                     break;
                 case "ī":
-                    res += 'ɨ';
+                    res += 'i';
+                    res += 'ː';
                     break;
                 case "Ī":
-                    res += 'ɨ';
+                    res += 'i';
+                    res += 'ː';
                     break;
                 case "tz":
+                    res += 'ʦ';
+                    break;
+                case "Tz":
+                    res += 'ʦ';
+                    break;
+                case "TZ":
                     res += 'ʦ';
                     break;
                 case "j":
                     res += 'ʤ';
                     break;
+                case "J":
+                    res += 'ʤ';
+                    break;
                 case "sh":
+                    res += 'ʃ';
+                    break;
+                case "Sh":
+                    res += 'ʃ';
+                    break;
+                case "SH":
                     res += 'ʃ';
                     break;
                 case "ō":
                     res += 'ɔ';
+                    res += 'ː';
                     break;
                 case "Ō":
                     res += 'ɔ';
+                    res += 'ː';
                     break;
                 case "ö":
                     res += 'ø';
@@ -132,9 +176,11 @@ public static class Helper
                     break;
                 case "ē":
                     res += 'ɛ';
+                    res += 'ː';
                     break;
                 case "Ē":
                     res += 'ɛ';
+                    res += 'ː';
                     break;
                 default:
                     break;
@@ -170,6 +216,7 @@ public enum Declension
 public enum MaintypeEnum
 {
     Noun,
+    Case,
     Verb,
     Adjective,
     Adverb,

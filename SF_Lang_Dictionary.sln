@@ -5,7 +5,7 @@ VisualStudioVersion = 17.5.33502.453
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF_Lang_Dictionary.Models", "SF_Lang_Dictionary\SF_Lang_Dictionary.Models.csproj", "{96E0255D-890E-4A5F-B67B-443334DE23AD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SF_Lang_Dictionary.Controllers", "SF_Lang_Dictionary.Controllers\SF_Lang_Dictionary.Controllers.csproj", "{5784B13D-866C-4F7D-8E98-4E99A9D71BB1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SF_Lang_Dictionary.Controllers", "SF_Lang_Dictionary.Controllers\SF_Lang_Dictionary.Controllers.csproj", "{5784B13D-866C-4F7D-8E98-4E99A9D71BB1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

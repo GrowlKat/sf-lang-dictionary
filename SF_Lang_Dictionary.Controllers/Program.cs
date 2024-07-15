@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using SF_Lang_Dictionary.Models;
 using Azure.Identity;
@@ -12,6 +13,8 @@ using SF_Lang_Dictionary.Controllers.Auth;
 Console.OutputEncoding = Encoding.Unicode;
 
 var builder = WebApplication.CreateBuilder(args);
+IWebHostEnvironment env = builder.Environment;
+Console.WriteLine($"Environment: {env.EnvironmentName}");
 
 // Initialize Azure Key Vault
 var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("VaultUri") ?? throw new("Vault URI not found"));
@@ -19,10 +22,27 @@ var tokenCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptio
 SecretManager secretManager = new();
 
 // Initialize JWT
-string signatureKey = secretManager.Client.GetSecret("signatureKey").Value.Value ?? throw new("Signature Key not found");
-string issuer = secretManager.Client.GetSecret("issuer").Value.Value ?? throw new("Issuer not found");
-string audience = secretManager.Client.GetSecret("audience").Value.Value ?? throw new("Issuer not found");
-List<string> origins = new() { issuer, audience };
+string signatureKey;
+string issuer;
+string audience;
+List<string> origins;
+
+// If the environment is production, get the secrets from Azure Key Vault
+if (env.IsProduction())
+{
+    signatureKey = secretManager.Client.GetSecret("signatureKey").Value.Value ?? throw new("Signature Key not found");
+    issuer = secretManager.Client.GetSecret("issuer").Value.Value ?? throw new("Issuer not found");
+    audience = secretManager.Client.GetSecret("audience").Value.Value ?? throw new("Issuer not found");
+    origins = new() { issuer, audience };
+}
+else
+{
+    IConfiguration configuration = builder.Configuration;
+    signatureKey = configuration.GetValue<string>("signatureKey") ?? throw new("Signature Key not found");
+    issuer = configuration.GetValue<string>("issuer") ?? throw new("Issuer not found");
+    audience = configuration.GetValue<string>("audience") ?? throw new("Audience not found");
+    origins = new() { issuer, audience };
+}
 
 IdentityModelEventSource.ShowPII = true;
 

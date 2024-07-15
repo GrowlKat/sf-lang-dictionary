@@ -47,22 +47,39 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         }
 
         // GET: api/Rootwords/GetByWord/y
-        [HttpGet("GetByWord/{word}")]
-        public async Task<ActionResult<Rootword>> GetRootwordByWord(string word)
+        [HttpGet("GetByWord/")]
+        public async Task<ActionResult<Rootword>> GetRootwordByWord([FromQuery] string word, [FromQuery] string lang = "sf")
         {
-            if (_context.Rootwords == null)
-            {
-                return NotFound();
-            }
+            // Validates the parameters
+            if (_context.Rootwords == null) return NotFound();
+            if (string.IsNullOrEmpty(word)) return BadRequest("Please set a word to find");
+            if (!Helper.AvailableLanguages.ContainsKey(lang))  return BadRequest("Language not supported");
+
+            Rootword? rootword;
 
             // Tries to get an exact match of the word searched
-            var rootword = await _context.Rootwords.FirstOrDefaultAsync(r => r.Rootword1 != null && r.Rootword1.Equals(word));
 
-            if (rootword == null)
+            // Search by it's rootword if the language is selenian
+            if (lang == "sf")
             {
-                // If an exact match is not found, tries to search a word that contains the parameter string, if it's not found, returns a Not Found HTTP State
-                rootword = await _context.Rootwords.FirstOrDefaultAsync(r => r.Rootword1 != null && r.Rootword1.Contains(word));
-                return rootword is not null ? rootword : NotFound();
+                rootword = await _context.Rootwords.FirstOrDefaultAsync(r => r.Rootword1 != null && r.Rootword1.Equals(word));
+                if (rootword == null)
+                {
+                    // If an exact match is not found, tries to search a word that contains the parameter string, if it's not found, returns a Not Found HTTP State
+                    rootword = await _context.Rootwords.FirstOrDefaultAsync(r => r.Rootword1 != null && r.Rootword1.Contains(word));
+                    return rootword is not null ? rootword : NotFound("Word not found, please try with another search");
+                }
+            }
+            // Search by it's meaning if the language is not selenian, first on it's english meaning and then translates it
+            else
+            {
+                rootword = await _context.Rootwords.FirstOrDefaultAsync(r => r.Meaning != null && r.Meaning.ToLower().Equals(word));
+                if (rootword == null)
+                {
+                    // If an exact match is not found, tries to search a word that contains the parameter string, if it's not found, returns a Not Found HTTP State
+                    rootword = await _context.Rootwords.FirstOrDefaultAsync(r => r.Meaning != null && r.Meaning.Contains(word));
+                    return rootword is not null ? rootword : NotFound("Word not found, please try with another search");
+                }
             }
 
             return rootword;
@@ -106,7 +123,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
         {
           if (_context.Rootwords == null)
           {
-              return Problem("Entity set 'SfLangContext.Rootwords'  is null.");
+              return Problem("Entity set 'SfLangContext.Rootwords' is null.");
           }
             _context.Rootwords.Add(rootword);
             await _context.SaveChangesAsync();

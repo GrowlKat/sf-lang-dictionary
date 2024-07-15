@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SF_Lang_Dictionary.Controllers.Schemas;
 using SF_Lang_Dictionary.Models;
 
 namespace SF_Lang_Dictionary.Controllers.Controllers
@@ -53,7 +54,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
 
         // GET: api/Suffixes/5
         [HttpGet("GetByDeclension/{declension}")]
-        public async Task<ActionResult<IEnumerable<Suffix>>> GetSuffixByDeclination(Declension declension)
+        public async Task<ActionResult<IEnumerable<SuffixResponse>>> GetSuffixByDeclination(Declension declension)
         {
             if (_context.Suffixes == null)
             {
@@ -62,30 +63,45 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
 
             // Gets all the suffixes and their maintypes and subtypes
             // Only gets the suffixes that matches the declension and only gets the maintype and subtype ids and names
-            var res = await _context.Suffixes
-                    .Select(s => new Suffix()
+            var res = await _context.Suffixes.Select(
+                s => new Suffix()
+                {
+                    SfxId = s.SfxId, // Id of the suffix
+                    Suffix1 = s.Suffix1, // Suffix
+                    MtpId = s.MtpId, // Id of the maintype
+                    Mtp = new Maintype() // Sets the maintype as a new object
                     {
-                        SfxId = s.SfxId, // Id of the suffix
-                        Suffix1 = s.Suffix1, // Suffix
-                        MtpId = s.MtpId, // Id of the maintype
-                        Mtp = new Maintype() // Sets the maintype as a new object
-                        {
-                            MtpId = s.Mtp != null ? s.Mtp.MtpId : default, // Id of the maintype
-                            Maintype1 = s.Mtp != null ? s.Mtp.Maintype1 : null // Name of the maintype
-                        },
-                        Stp = new Subtype() // Sets the subtype as a new object
-                        {
-                            StpId = s.Stp != null ? s.Stp.StpId : default, // Id of the subtype
-                            Subtype1 = s.Stp != null ? s.Stp.Subtype1 : null // Name of the subtype
-                        }
-                    })
-                    .Where(s => s.MtpId == Convert.ToInt32(declension)) // Only gets the suffixes that matches the declension
-                    .ToListAsync();
+                        MtpId = s.Mtp != null ? s.Mtp.MtpId : default, // Id of the maintype
+                        Maintype1 = s.Mtp != null ? s.Mtp.Maintype1 : null // Name of the maintype
+                    },
+                    Stp = new Subtype() // Sets the subtype as a new object
+                    {
+                        StpId = s.Stp != null ? s.Stp.StpId : default, // Id of the subtype
+                        Subtype1 = s.Stp != null ? s.Stp.Subtype1 : null // Name of the subtype
+                    }
+                })
+                .Where(s => s.MtpId == Convert.ToInt32(declension)) // Only gets the suffixes that matches the declension
+                .ToListAsync();
 
             // If the result is null, return not found
             if (res == null) return NotFound("Cases not found");
 
-            return res;
+            // Convert the result in a suffix response schema
+            List<SuffixResponse> result = new();
+            foreach (var s in res)
+            {
+                result.Add(new SuffixResponse()
+                {
+                    SfxId = s.SfxId,
+                    Suffix = s.Suffix1,
+                    Maintype = s.Mtp != null ? s.Mtp.Maintype1 : default,
+                    Subtype = s.Stp != null ? s.Stp.Subtype1 : default,
+                    MtpId = s.MtpId != null ? s.MtpId : default,
+                    StpId = s.Stp != null ? s.Stp.StpId : default
+                });
+            }
+
+            return result;
         }
 
         // PUT: api/Suffixes/5
@@ -116,7 +132,7 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
                 }
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Suffixes
