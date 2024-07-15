@@ -6,5 +6,7 @@ const nextConfig = {
     },
     output: "export",
 }
+const withSvgr = require('next-svgr');
 
 module.exports = nextConfig
+module.exports = withSvgr()

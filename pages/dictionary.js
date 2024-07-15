@@ -10,6 +10,8 @@ import { BiSolidDownArrow } from "react-icons/bi"
 import { RiKeyboardLine } from "react-icons/ri"
 import { BsLinkedin, BsGithub, BsTwitter } from "react-icons/bs"
 import { checkIfVocal } from "../Utils"
+import SelenianFlag from '../images/selenian-flag.svg'
+import EnglishFlag from '../images/english-flag.svg'
 
 /**
  * Main page that let the user search for words
@@ -18,6 +20,8 @@ import { checkIfVocal } from "../Utils"
 function Dictionary() {
     const [search, setSearch] = useState("") // Search string captured at input
     const [validSearch, setValidSearch] = useState(true) // Sets if should appear an error message
+    const [searchLang, setSearchLang] = useState("sf") // Sets the language that the user is searching for
+    const [searchLangFlag, setSearchLangFlag] = useState(<></>) // Sets the flag of the language that the user is searching for
     const [word, setWord] = useState(null) // Gets the object returned by the API
     const [wordConjugations, setWordConjugations] = useState(null) // Gets the object returned by the API
     const [shownWord, setShownWord] = useState(<></>) // Show the data of the current word in application
@@ -33,7 +37,7 @@ function Dictionary() {
     function showWord(wordObject, conjugationsObject) {
         let isEmpty = wordObject === null || wordObject === undefined // The object is null or undefined?
         setValidSearch(search !== "" && !isEmpty) // If search string and word object are empty, an error message is shown
-        if (!isEmpty) setShownWord(<WordComponent wordObject={wordObject} wordConjugations={conjugationsObject}/>) // If word object is not empty, updates the shown word in application
+        if (!isEmpty) setShownWord(<WordComponent wordObject={wordObject} wordConjugations={conjugationsObject} lang={searchLang}/>) // If word object is not empty, updates the shown word in application
     }
 
     async function handleSubit(event) {
@@ -44,12 +48,13 @@ function Dictionary() {
         // Checks if search string is not empty, if it's not, try updating the word that the user searched, if not, an error message is shown
         if (search.trim() !== "") {
             try {
-                result = await api.get(`/Rootwords/GetByWord/${search.toLowerCase()}`) // Gets a word with the API by the search given by user
+                let data = { word: search, lang: searchLang } // Data to send to the API
+                result = await api.get(`/Rootwords/GetByWord`, {params: data}) // Gets a word with the API by the search given by user
                 
                 // If result is not empty, cancel the error message and updates the word shown in application, if not, show a message error
                 if (result !== "") {
                     setValidSearch(true)
-                    let resultConjugations = await api.get(`/Suffixes/GetByDeclension/${checkIfVocal(result.rootword1) ? 1 : 2}`) // Gets the conjugations of the word
+                    let resultConjugations = await api.get(`/Suffixes/GetByDeclension/${checkIfVocal(result.rootword1) ? 2 : 1}`) // Gets the conjugations of the word
                     setWordConjugations(resultConjugations)
                     setWord(result)
                 }
@@ -58,7 +63,7 @@ function Dictionary() {
                     setErrorMessage("Word not found, please try with another search")
                 }
             }
-            catch {
+            catch (error) {
                 // When an exception is catched, automatically sets an error message 
                 setValidSearch(false)
                 setErrorMessage("Word not found, please try with another search")
@@ -75,7 +80,7 @@ function Dictionary() {
      * @param {*} e The event that triggered the function
      */
     function handleDropdownClick(e) {
-        e.preventDefault()
+        e.preventDefault() // Prevents reloading the page
         setDropdownOpen(!dropdownOpen)
         inputRef.current.focus()
     }
@@ -85,7 +90,7 @@ function Dictionary() {
         setShownWord(
             <>
             <dl>
-                <dt key={"word0"}>Search for a word in Selenish Language!</dt>
+                <dt key={"word0"}>Search for a word in Selenian Language!</dt>
                 <dd key={"data0"}></dd>
             </dl>
             </>
@@ -95,7 +100,13 @@ function Dictionary() {
     // Updates the word shown in application when word object is updated too
     useEffect(() => {
         if (word) showWord(word, wordConjugations)
-      }, [word, wordConjugations]);
+    }, [word, wordConjugations]);
+
+    // Updates the flag of the language that the user is searching for
+    useEffect(() => {
+        setSearchLangFlag(searchLang === "sf" ? <SelenianFlag/> : <EnglishFlag/>)
+                
+    }, [searchLang])
 
     return(
         <>
@@ -106,6 +117,23 @@ function Dictionary() {
                         Search for a word:<br/>
                         {/* Search bar to search for a word */}
                         <div className="word-searchbar">
+                            {/* Select to choose the language that the user is searching for */}
+                            <div style={{display: "flex", position: "relative", width: "240px", right: "8px", flexDirection: "column", marginBottom: "16px"}}>
+                                <div style={{position: "relative", left: "12px"}}>
+                                    <label style={{color: "white", fontSize: "26px", width: "240px"}}>Language to Search:</label>
+                                    <br/>
+                                </div>
+                                <div style={{position: "relative", left: "12px", display: "flex", alignItems: "center"}}>
+                                    <label style={{color: "white", fontSize: "26px", width: "240px", position: "relative", display: "flex", justifyContent: "center"}}>{searchLangFlag}</label>
+                                    <select 
+                                    value={searchLang} 
+                                    style={{color: "black", borderColor: "white", borderRadius: "4px", width: "140px", fontSize: "24px", right: "24px", position: "relative"}} 
+                                    onChange={(e) => setSearchLang(e.target.value)}>
+                                        <option value="sf">Selenian</option>
+                                        <option value="en">English</option>
+                                    </select>
+                                </div>
+                            </div>
                             {/* Button to show or hide the dropdown menu of special characters */}
                             <CustomButton action="#"
                                 borderColor={"transparent"} 

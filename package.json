@@ -9,16 +9,22 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@nextui-org/tooltip": "^2.0.36",
+    "@svgr/webpack": "^8.1.0",
     "@types/node": "20.6.3",
     "@types/react": "18.2.22",
     "@types/react-dom": "18.2.7",
     "axios": "^1.5.0",
+    "cors": "^2.8.5",
     "eslint": "8.49.0",
     "eslint-config-next": "13.5.2",
     "next": "13.5.2",
+    "next-images": "^1.8.5",
+    "next-svgr": "^0.0.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-icons": "^4.11.0",
+    "react-tooltip": "^5.27.1",
     "styled-components": "^6.0.8",
     "typescript": "5.2.2"
   },

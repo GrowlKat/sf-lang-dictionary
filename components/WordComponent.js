@@ -8,9 +8,10 @@ import './CharacterDropdown.js.css'
  * @param {*} wordObject Object requested in API with word info 
  * @returns 
  */
-function WordComponent({wordObject, wordConjugations}) {
+function WordComponent({wordObject, wordConjugations, lang}) {
     const [isTableOpen, setIsTableOpen] = useState(false) // Sets if the table should be shown or not
     let rootword = "" // Initialize a string for trying to capitalizing the rootword in the object
+    let meaning = "" // Get the meaning of the word in the object
 
     /**
      * Find the conjugation of a word based on its case and number
@@ -25,30 +26,30 @@ function WordComponent({wordObject, wordConjugations}) {
             case Cases.NOMINATIVE:
                 switch (numberType) {
                     case Numbers.SINGULAR:
-                        return rootword + wordConjugations.find((c) => c.stp.subtype1 === "Singular Nominative").suffix1
+                        return rootword + wordConjugations.find((c) => c.subtype === "Singular Nominative").suffix
                     case Numbers.PLURAL:
-                        return rootword + wordConjugations.find((c) => c.stp.subtype1 === "Plural Nominative").suffix1
+                        return rootword + wordConjugations.find((c) => c.subtype === "Plural Nominative").suffix
                 }
             case Cases.ACCUSATIVE:
                 switch (numberType) {
                     case Numbers.SINGULAR:
-                        return rootword + wordConjugations.find((c) => c.stp.subtype1 === "Singular Accusative").suffix1
+                        return rootword + wordConjugations.find((c) => c.subtype === "Singular Accusative").suffix
                     case Numbers.PLURAL:
-                        return rootword + wordConjugations.find((c) => c.stp.subtype1 === "Plural Accusative").suffix1
+                        return rootword + wordConjugations.find((c) => c.subtype === "Plural Accusative").suffix
                 }
             case Cases.GENITIVE:
                 switch (numberType) {
                     case Numbers.SINGULAR:
-                        return rootword + wordConjugations.find((c) => c.stp.subtype1 === "Singular Genitive").suffix1
+                        return rootword + wordConjugations.find((c) => c.subtype === "Singular Genitive").suffix
                     case Numbers.PLURAL:
-                        return rootword + wordConjugations.find((c) => c.stp.subtype1 === "Plural Genitive").suffix1
+                        return rootword + wordConjugations.find((c) => c.subtype === "Plural Genitive").suffix
                 }
             case Cases.DATIVE:
                 switch (numberType) {
                     case Numbers.SINGULAR:
-                        return rootword + wordConjugations.find((c) => c.stp.subtype1 === "Singular Dative").suffix1
+                        return rootword + wordConjugations.find((c) => c.subtype === "Singular Dative").suffix
                     case Numbers.PLURAL:
-                        return rootword + wordConjugations.find((c) => c.stp.subtype1 === "Plural Dative").suffix1
+                        return rootword + wordConjugations.find((c) => c.subtype === "Plural Dative").suffix
                 }
         }
     }
@@ -59,19 +60,34 @@ function WordComponent({wordObject, wordConjugations}) {
 
     // If rootword in object is not empty, capitalizes it, if not, just sets the empty rootword
     rootword = wordObject.rootword1 !== "" ? capitalize(wordObject.rootword1) : wordObject.rootword1
+    meaning = wordObject.meaning !== "" ? capitalize(wordObject.meaning) : wordObject.meaning
+
     return(
         <>
         <dl>
-        <dt key={"word" + wordObject.rootId}>{rootword}</dt>
-            <dd key={"data" + wordObject.rootId}>
-                Meaning: {wordObject.meaning}<br/>
-                Pronunciation: {wordObject.pronunciation}
-            </dd>
-            <BiSolidDownArrow className={`inline-flex relative transform ${isTableOpen ? 'rotate-180' : ''}`} onClick={toggleTable} style={{cursor: 'pointer'}}/>
+        { lang === "sf" ?
+            <>
+            <dt key={"word" + wordObject.rootId}>{rootword}</dt>
+                <dd key={"data" + wordObject.rootId}>
+                    Meaning: {meaning}<br/>
+                    Pronunciation: {wordObject.pronunciation}
+                </dd>
+                <BiSolidDownArrow className={`inline-flex relative transform ${isTableOpen ? 'rotate-180' : ''}`} onClick={toggleTable} style={{cursor: 'pointer'}}/>
+            </>
+            :
+            <>
+            <dt key={"word" + wordObject.rootId}>{meaning}</dt>
+                <dd key={"data" + wordObject.rootId}>
+                    Translated from: {rootword}<br/>
+                    Pronunciation: {wordObject.pronunciation}
+                </dd>
+                <BiSolidDownArrow className={`inline-flex relative transform ${isTableOpen ? 'rotate-180' : ''}`} onClick={toggleTable} style={{cursor: 'pointer'}}/>
+            </>
+        }
         </dl>
         {isTableOpen && <div className="declension-table">
             <table>
-                <caption>Declension: {wordConjugations[0].mtpId === 1 ? "Strong" : "Soft"}</caption>
+                <caption>Declension: {wordConjugations[0].mtpId === 2 ? "Strong" : "Soft"}</caption>
                 <thead>
                     <tr>
                         <th>Case</th>
