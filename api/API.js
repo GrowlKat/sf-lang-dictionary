@@ -2,7 +2,6 @@ import axios from "axios";
 
 // API URL
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-console.log("API URL: " + apiUrl);
 /**
  * Shortcut for consulting API and recieving it's data
  */
