@@ -33,7 +33,8 @@ if (env.IsProduction())
     signatureKey = secretManager.Client.GetSecret("signatureKey").Value.Value ?? throw new("Signature Key not found");
     issuer = secretManager.Client.GetSecret("issuer").Value.Value ?? throw new("Issuer not found");
     audience = secretManager.Client.GetSecret("audience").Value.Value ?? throw new("Issuer not found");
-    origins = new() { issuer, audience };
+    origins = [issuer, audience];
+    origins.ForEach(o => Console.WriteLine(o));
 }
 else
 {
@@ -41,7 +42,7 @@ else
     signatureKey = configuration.GetValue<string>("signatureKey") ?? throw new("Signature Key not found");
     issuer = configuration.GetValue<string>("issuer") ?? throw new("Issuer not found");
     audience = configuration.GetValue<string>("audience") ?? throw new("Audience not found");
-    origins = new() { issuer, audience };
+    origins = [issuer, audience];
 }
 
 IdentityModelEventSource.ShowPII = true;
@@ -114,8 +115,8 @@ builder.Services.AddSwaggerGen(option =>
             {
                 Reference = new OpenApiReference
                 {
-                    Type=ReferenceType.SecurityScheme,
-                    Id="Bearer"
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
                 }
             },
             Array.Empty<string>()
@@ -126,12 +127,13 @@ builder.Services.AddSwaggerGen(option =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+/*if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    
+}*/
 
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseCors();
 app.UseAuthentication();
