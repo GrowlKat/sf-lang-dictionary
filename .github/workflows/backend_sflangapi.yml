@@ -43,6 +43,10 @@ jobs:
       - name: Check .NET version
         run: dotnet --version
 
+      - name: List all installed packages
+        run: dotnet list package --include-transitive
+
+
   deploy:
     runs-on: windows-latest
     needs: build
