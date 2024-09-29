@@ -45,10 +45,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-
-      - name: Configure UTF-8 encoding
-        run: chcp 65001
-
       
       - name: Deploy to Azure Web App
         id: deploy-to-webapp

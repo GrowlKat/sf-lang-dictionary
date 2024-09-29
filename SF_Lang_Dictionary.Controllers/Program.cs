@@ -9,11 +9,11 @@ using SF_Lang_Dictionary.Models;
 using Azure.Identity;
 using SF_Lang_Dictionary.Controllers.Auth;
 
-// A conlang needs unicode to print special characters of it's writing system latinization and IPA pronunciation characters
-Console.OutputEncoding = Encoding.Unicode;
-
 var builder = WebApplication.CreateBuilder(args);
 IWebHostEnvironment env = builder.Environment;
+
+// A conlang needs unicode to print special characters of it's writing system latinization and IPA pronunciation characters
+Console.OutputEncoding = env.IsProduction() ? Encoding.UTF8 : Encoding.Unicode;
 Console.WriteLine($"Environment: {env.EnvironmentName}");
 
 // Initialize Azure Key Vault
