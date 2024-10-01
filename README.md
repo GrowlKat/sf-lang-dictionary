@@ -1,4 +1,4 @@
-# Welcome to Selenian Web Dictionary! (SF Lang Dictionary)
+# Welcome to Selenian Language Website! (SF Lang App)
 
 A web project to show information about a conlang called Selenian (Kānann Sēlenfolð). This a very personal project where I can show a virtual dictionary and plenty more comming soon of this conlang.
 
@@ -17,6 +17,6 @@ The information you can get is:
 - It's IPA pronunciation
 - A table with it's declension and conjugation
 
-Go to the [Selenian Dictionary](https://www.sflang.cloudns.org/dictionary) and check by youself!
+Go to the [Selenian Dictionary](https://www.sflang.cloudns.org/dictionary) or the [Selenian Word Search](https://www.sflang.cloudns.org/search-word) and check by youself!
 
 Also, you can follow me on [Twitter](https://twitter.com/Growl_Kat) to get more information about this project and other projects I'm working on!

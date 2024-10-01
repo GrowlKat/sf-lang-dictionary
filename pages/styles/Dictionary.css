@@ -1,43 +1,36 @@
-.word-form {
-    position: absolute;
-    top: 25%;
+.nav-searchbar {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.word-searchbar {
+.nav-background {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.invalid-input {
-    border-color: red;
-    animation: shake 0.5s ease-in-out;
+.dictionary-content {
+    display: flex;
+    width: 100%;
+    padding-left: 15vw;
 }
 
-.error-message {
-    display: flex;
-    position: absolute;
-    color: red;
-    font-size: 14px;
-    margin-top: 4px;
-    justify-content: center;
-    left: 80px;
-}
-  
-@keyframes spawn {
-    0%, 100% {
-        transform: translateY(100%);
+@media (max-width: 700px) {
+    .nav-searchbar {
+        display: flex;
+        text-align: center;
+        flex-direction: column;
     }
-}
-  
-@keyframes shake {
-    0%, 100% {
-        transform: translateX(0);
+
+    .nav-background {
+        display: block;
+        text-align: center;
     }
-    25%, 75% {
-        transform: translateX(-10px);
-    }
-    50% {
-        transform: translateX(10px);
+
+    .dictionary-content {
+        display: flex;
+        width: 100%;
+        padding: 0px;
     }
 }

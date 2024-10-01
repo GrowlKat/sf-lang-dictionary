@@ -24,6 +24,16 @@
   color: white;
 }
 
+.App-nav {
+  background-color: #0b003a;
+  min-width: 100%;
+  min-height: 3vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+}
+
 .App-main {
   background: linear-gradient(170deg, #120061 27%, #0e4200 78%);
   min-height: 97vh;
@@ -36,7 +46,7 @@
 
 .App-footer {
   background-color: #282c34;
-  min-width: 100vw;
+  min-width: 100%;
   min-height: 3vh;
   display: flex;
   flex-direction: column;
@@ -79,4 +89,19 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+@media screen and (max-width: 700px) {
+  .App-header {
+    font-size: 1.5rem;
+  }
+  .App-main {
+    font-size: 1.5rem;
+  }
+  .App-footer {
+    width: 100vw;
+    display: block;
+    font-size: 0.7rem;
+  }
+  
 }
