@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react"
 import { CustomButton, CustomInput, NavInput, NavButton } from "../components/CustomComponents"
 import "./styles/global.css"
-import "./styles/dictionary.css"
+import "./dictionary.css"
 import "./index.css"
 import "./App.css"
 import api from "../api/API"
