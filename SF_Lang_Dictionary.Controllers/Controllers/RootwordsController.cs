@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SF_Lang_Dictionary.Controllers.Schemas;
 using SF_Lang_Dictionary.Models;
 
 namespace SF_Lang_Dictionary.Controllers.Controllers
@@ -26,6 +27,58 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
                 return NotFound();
             }
             return await _context.Rootwords.ToListAsync();
+        }
+
+        [HttpGet("GetAll/")]
+        public async Task<ActionResult<IEnumerable<Rootword>>> GetAllRootwords([FromQuery] bool sortAlphabetically, [FromQuery] string lang = "sf")
+        {
+            if (_context.Rootwords == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _context.Rootwords.ToListAsync();
+
+            // Sorts the result alphabetically depending on the language
+            if (lang == "sf")
+            {
+                if (sortAlphabetically) result.Sort((a, b) => string.Compare(a.Rootword1, b.Rootword1, StringComparison.Ordinal));
+            }
+            else if (Helper.AvailableLanguages.ContainsKey(lang))
+            {
+                if (sortAlphabetically) result.Sort((a, b) => string.Compare(a.Meaning, b.Meaning, StringComparison.Ordinal));
+            }
+            else return BadRequest("Language not supported");
+
+            return result;
+        }
+
+        [HttpGet("SearchWords/")]
+        public async Task<ActionResult<IEnumerable<Rootword>>> SearchWords([FromQuery] string search, [FromQuery] bool sortAlphabetically, [FromQuery] string lang = "sf")
+        {
+            if (_context.Rootwords == null)
+            {
+                return NotFound();
+            }
+
+            List<Rootword> result;
+
+            // Searches for the word in the rootword or meaning depending on the language
+            if (lang == "sf")
+            {
+                // Searches for the rootword and sorts the result alphabetically
+                result = await _context.Rootwords.Select(r => r).Where(r => r.Rootword1 != null && r.Rootword1.Contains(search)).ToListAsync();
+                if (sortAlphabetically) result.Sort((a, b) => string.Compare(a.Rootword1, b.Rootword1, StringComparison.Ordinal));
+            }
+            else if (Helper.AvailableLanguages.ContainsKey(lang))
+            {
+                // Searches for the rootword and sorts the result alphabetically
+                result = await _context.Rootwords.Select(r => r).Where(r => r.Meaning != null && r.Meaning.Contains(search)).ToListAsync();
+                if (sortAlphabetically) result.Sort((a, b) => string.Compare(a.Meaning, b.Meaning, StringComparison.Ordinal));
+            }
+            else return BadRequest("Language not supported");
+
+            return result;
         }
 
         // GET: api/Rootwords/5
@@ -85,6 +138,87 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
             return rootword;
         }
 
+        // POST: api/Rootwords
+        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [HttpPost, Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        public async Task<ActionResult<Rootword>> PostRootword(Rootword rootword)
+        {
+            if (_context.Rootwords == null)
+            {
+                return Problem("Entity set 'SfLangContext.Rootwords' is null.");
+            }
+            _context.Rootwords.Add(rootword);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetRootword", new { id = rootword.RootId }, rootword);
+        }
+
+        [HttpPost("SearchByTags/")]
+        public async Task<ActionResult<IEnumerable<Rootword>>> GetRootwordsByTag(TagsRequest request, [FromQuery] bool sortAlphabetically = true, bool exclusiveSearch = true, [FromQuery] string lang = "sf")
+        {
+            if (_context.Rootwords == null)
+            {
+                return NotFound();
+            }
+
+            List<Rootword> result = [];
+            var tags = request.tags;
+
+            // Searches for all the rootwords that contain any of the tags provided
+            foreach (var t in tags)
+            {
+                Console.WriteLine($"Searching for Tag: {t}\n");
+                var newData = await _context.Rootwords.Select(r => r).Where(r => r.Tags != null && r.Tags.ToLower().Contains(t)).ToListAsync();
+                foreach (var n in newData) result.Add(n);
+            }
+
+            // Filters the result to return only rootwords that have all the tags provided, if exclusiveSearch is set to true
+            if (exclusiveSearch)
+            {
+                List<Rootword> temp = [];
+                foreach (var r in result)
+                {
+                    var t = r.Tags?.ToLower().Split(", "); // Splits the tags string into a list of tags
+                    int tagCount = 0; // Counter to check if all the tags are present in the rootword
+                    if (t != null)
+                    {
+                        foreach (var tag in t)
+                        {
+                            // If the tag is present in the list of tags provided, increments the counter
+                            if (tags != null && tags.Contains(tag))
+                            {
+                                tagCount++;
+                                continue;
+                            }
+                        }
+                    }
+
+                    // If the counter is equal to the amount of tags provided, adds the rootword to the result
+                    if (tags != null && tagCount == tags.Count)
+                    {
+                        temp.Add(r);
+                        continue;
+                    }
+                }
+                result = temp; // Updates the result with the filtered list
+            }
+
+            // Sorts the result alphabetically depending on the language
+            if (lang == "sf")
+            {
+                if (sortAlphabetically) result.Sort((a, b) => string.Compare(a.Rootword1, b.Rootword1, StringComparison.Ordinal));
+            }
+            else if (Helper.AvailableLanguages.ContainsKey(lang))
+            {
+                if (sortAlphabetically) result.Sort((a, b) => string.Compare(a.Meaning, b.Meaning, StringComparison.Ordinal));
+            }
+            else return BadRequest("Language not supported");
+
+            result = result.Distinct().ToList(); // Remove duplicates
+
+            return result;
+        }
+
         // PUT: api/Rootwords/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -114,21 +248,6 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
             }
 
             return NoContent();
-        }
-
-        // POST: api/Rootwords
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost, Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public async Task<ActionResult<Rootword>> PostRootword(Rootword rootword)
-        {
-          if (_context.Rootwords == null)
-          {
-              return Problem("Entity set 'SfLangContext.Rootwords' is null.");
-          }
-            _context.Rootwords.Add(rootword);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetRootword", new { id = rootword.RootId }, rootword);
         }
 
         // DELETE: api/Rootwords/5

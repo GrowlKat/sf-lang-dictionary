@@ -10,3 +10,11 @@ public class SuffixSchema
 
     public string? Stp { get; set; }
 }
+
+/// <summary>
+/// Request object for the Tags search endpoints
+/// </summary>
+public class TagsRequest
+{
+    public required List<string> tags { get; set; }
+}

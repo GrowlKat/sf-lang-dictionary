@@ -34,7 +34,6 @@ if (env.IsProduction())
     issuer = secretManager.Client.GetSecret("issuer").Value.Value ?? throw new("Issuer not found");
     audience = secretManager.Client.GetSecret("audience").Value.Value ?? throw new("Issuer not found");
     origins = [issuer, audience];
-    origins.ForEach(o => Console.WriteLine(o));
 }
 else
 {
