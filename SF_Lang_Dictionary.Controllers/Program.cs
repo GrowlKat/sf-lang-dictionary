@@ -149,6 +149,37 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseCors(env.IsProduction() ? "AllowSpecificOrigin" : "DefaultPolicy");
+//app.UseCors("AllowSpecificOrigin");
+
+app.Use(async (context, next) =>
+{
+    var origin = context.Request.Headers["Origin"];
+    var method = context.Request.Method;
+
+    // Log the origin and method for each request
+    Console.WriteLine($"Request Origin: {origin}, HTTP Method: {method}");
+
+    await next.Invoke();
+});
+
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next.Invoke();
+    }
+    catch (Exception ex)
+    {
+        // Log any CORS-related errors
+        if (ex.Message.Contains("CORS"))
+        {
+            Console.WriteLine("CORS Exception: " + ex.Message);
+        }
+
+        throw;
+    }
+});
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
