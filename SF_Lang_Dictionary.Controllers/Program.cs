@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using SF_Lang_Dictionary.Models;
 using Azure.Identity;
@@ -33,7 +32,8 @@ if (env.IsProduction())
     signatureKey = secretManager.Client.GetSecret("signatureKey").Value.Value ?? throw new("Signature Key not found");
     issuer = secretManager.Client.GetSecret("issuer").Value.Value ?? throw new("Issuer not found");
     audience = secretManager.Client.GetSecret("audience").Value.Value ?? throw new("Issuer not found");
-    origins = [issuer, audience];
+    origins = new() { issuer, audience };
+    origins.ForEach(o => Console.WriteLine(o));
 }
 else
 {
@@ -41,7 +41,7 @@ else
     signatureKey = configuration.GetValue<string>("signatureKey") ?? throw new("Signature Key not found");
     issuer = configuration.GetValue<string>("issuer") ?? throw new("Issuer not found");
     audience = configuration.GetValue<string>("audience") ?? throw new("Audience not found");
-    origins = [issuer, audience];
+    origins = new() { issuer, audience };
 }
 
 IdentityModelEventSource.ShowPII = true;
@@ -55,17 +55,35 @@ builder.Services.AddDbContext<SfLangContext>(options =>
     var context = new SfLangContext();
 });
 
-// Adds CORS to API services
-builder.Services.AddCors(o =>
+if (env.IsProduction())
 {
-    o.AddDefaultPolicy(p =>
+    // Adds CORS to API services
+    builder.Services.AddCors(o =>
     {
-        p.WithOrigins(origins.ToArray())
-        .AllowAnyHeader()
-        .AllowAnyMethod()
-        .AllowCredentials();
+        o.AddPolicy("AllowSpecificOrigin", p =>
+        {
+            p.WithOrigins(origins.ToArray())
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+        });
     });
-});
+}
+else
+{
+    // Adds CORS to API services
+    builder.Services.AddCors(o =>
+    {
+        o.AddPolicy("DefaultPolicy", p =>
+        {
+            p.AllowAnyOrigin()
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+        });
+    });
+}
+
 
 // Adds authentication to API services
 builder.Services
@@ -130,7 +148,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-app.UseCors();
+app.UseCors(env.IsProduction() ? "AllowSpecificOrigin" : "DefaultPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
