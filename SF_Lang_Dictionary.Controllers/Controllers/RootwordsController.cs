@@ -140,9 +140,12 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
 
         // POST: api/Rootwords
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost, Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+        [HttpPost("UploadWord/"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         public async Task<ActionResult<Rootword>> PostRootword(Rootword rootword)
         {
+            Console.WriteLine("Entrando");
+            // If JWT authentication fails, returns an Unauthorized HTTP State
+            if (!ModelState.IsValid) return Unauthorized("Please enter a valid token");
             if (_context.Rootwords == null)
             {
                 return Problem("Entity set 'SfLangContext.Rootwords' is null.");

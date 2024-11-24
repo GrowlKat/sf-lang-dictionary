@@ -15,11 +15,6 @@ IWebHostEnvironment env = builder.Environment;
 Console.OutputEncoding = env.IsProduction() ? Encoding.UTF8 : Encoding.Unicode;
 Console.WriteLine($"Environment: {env.EnvironmentName}");
 
-// Initialize Azure Key Vault
-var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("VaultUri") ?? throw new("Vault URI not found"));
-var tokenCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeAzurePowerShellCredential = true });
-SecretManager secretManager = new();
-
 // Initialize JWT
 string signatureKey;
 string issuer;
@@ -29,11 +24,18 @@ List<string> origins;
 // If the environment is production, get the secrets from Azure Key Vault
 if (env.IsProduction())
 {
+    // Initialize Azure Key Vault
+    var keyVaultEndpoint = new Uri(Environment.GetEnvironmentVariable("VaultUri") ?? throw new("Vault URI not found"));
+    var tokenCredential = new DefaultAzureCredential(new DefaultAzureCredentialOptions { ExcludeAzurePowerShellCredential = true });
+    SecretManager secretManager = new();
+
     signatureKey = secretManager.Client.GetSecret("signatureKey").Value.Value ?? throw new("Signature Key not found");
     issuer = secretManager.Client.GetSecret("issuer").Value.Value ?? throw new("Issuer not found");
     audience = secretManager.Client.GetSecret("audience").Value.Value ?? throw new("Issuer not found");
-    origins = new() { issuer, audience };
-    origins.ForEach(o => Console.WriteLine(o));
+    origins = [issuer, audience];
+
+    // Add Azure Key Vault to the configuration pipeline
+    builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, tokenCredential);
 }
 else
 {
@@ -41,13 +43,11 @@ else
     signatureKey = configuration.GetValue<string>("signatureKey") ?? throw new("Signature Key not found");
     issuer = configuration.GetValue<string>("issuer") ?? throw new("Issuer not found");
     audience = configuration.GetValue<string>("audience") ?? throw new("Audience not found");
-    origins = new() { issuer, audience };
+    origins = [issuer, audience];
 }
 
 IdentityModelEventSource.ShowPII = true;
 
-// Add Azure Key Vault to the configuration pipeline
-builder.Configuration.AddAzureKeyVault(keyVaultEndpoint, tokenCredential);
 
 // Adds the DbContext in API services
 builder.Services.AddDbContext<SfLangContext>(options =>
@@ -78,8 +78,7 @@ else
         {
             p.AllowAnyOrigin()
             .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
+            .AllowAnyMethod();
         });
     });
 }
@@ -158,7 +157,6 @@ app.Use(async (context, next) =>
 
     // Log the origin and method for each request
     Console.WriteLine($"Request Origin: {origin}, HTTP Method: {method}");
-
     await next.Invoke();
 });
 

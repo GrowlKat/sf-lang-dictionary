@@ -2,16 +2,16 @@
 using Microsoft.IdentityModel.Tokens;
 using SF_Lang_Dictionary.Controllers.Schemas;
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 
 namespace SF_Lang_Dictionary.Controllers.Auth
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class Auth : ControllerBase
+    public class Auth(IConfiguration configuration) : ControllerBase
     {
         private readonly SecretManager secretManager = new();
+        private readonly IConfiguration configuration = configuration;
         private string signatureKey = "";
         private string adminUser = "";
         private string adminPassword = "";
@@ -25,12 +25,24 @@ namespace SF_Lang_Dictionary.Controllers.Auth
 
             try
             {
-                // Get the value of variables from Azure Key Vault
-                signatureKey = secretManager.Client.GetSecret("signatureKey").Value.Value;
-                adminUser = secretManager.Client.GetSecret("adminUser").Value.Value;
-                adminPassword = secretManager.Client.GetSecret("adminPassword").Value.Value;
-                issuer = secretManager.Client.GetSecret("issuer").Value.Value;
-                audience = secretManager.Client.GetSecret("audience").Value.Value;
+                // Get the value of variables from Azure Key Vault, or local if it's development environment
+                var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+                if (env is not null && env.Equals("Production"))
+                {
+                    signatureKey = secretManager.Client.GetSecret("signatureKey").Value.Value ?? throw new("Signature Key not found");
+                    adminUser = secretManager.Client.GetSecret("adminUser").Value.Value ?? throw new("Admin User not found");
+                    adminPassword = secretManager.Client.GetSecret("adminPassword").Value.Value ?? throw new("Admin Password not found");
+                    issuer = secretManager.Client.GetSecret("issuer").Value.Value ?? throw new("Issuer not found");
+                    audience = secretManager.Client.GetSecret("audience").Value.Value ?? throw new("Audience not found");
+                }
+                else
+                {
+                    signatureKey = configuration.GetValue<string>("signatureKey") ?? throw new("Signature Key not found");
+                    adminUser = configuration.GetValue<string>("adminUser") ?? throw new("Admin User not found");
+                    adminPassword = configuration.GetValue<string>("adminPassword") ?? throw new("Admin Password not found");
+                    issuer = configuration.GetValue<string>("issuer") ?? throw new("Issuer not found");
+                    audience = configuration.GetValue<string>("audience") ?? throw new("Audience not found");
+                }
 
                 // Check if username and password are specified
                 if (string.IsNullOrEmpty(loginDTO.UserName) || string.IsNullOrEmpty(loginDTO.Password))
@@ -47,13 +59,13 @@ namespace SF_Lang_Dictionary.Controllers.Auth
                     var jwtSecurityToken = new JwtSecurityToken(
                         issuer: issuer,
                         audience: audience,
-                        claims: new List<Claim>(),
+                        claims: [],
                         expires: DateTime.Now.AddMinutes(30),
                         signingCredentials: signinCredentials
                     );
                     token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
                 }
-                else return Unauthorized();
+                else return Unauthorized("Wrong User or Password providen, try again");
             }
             catch(Exception e)
             {
@@ -62,7 +74,7 @@ namespace SF_Lang_Dictionary.Controllers.Auth
             }
             // If everything is correct, return the JWT token, otherwise return an Unauthorized HTTP State
             if (token == null)
-                return Unauthorized();
+                return Unauthorized("Something wrong happened while creating authorizaton token, please try again");
             else return Ok(token);
         }
     }

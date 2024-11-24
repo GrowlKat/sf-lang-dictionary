@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using SF_Lang_Dictionary.Controllers;
+﻿using Microsoft.AspNetCore.Mvc;
+using SF_Lang_Dictionary.Controllers.Schemas;
+
 namespace SF_Lang_Dictionary.Controllers.Controllers
 {
     [Route("api/[controller]")]
@@ -31,29 +30,60 @@ namespace SF_Lang_Dictionary.Controllers.Controllers
             else return res;
         }
 
-        // GET api/<MiscController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("MapToIPA/")]
+        public ActionResult<string> MapToIPA(string word)
         {
-            return "value";
+            // Maps a word to it's IPA pronunciation
+            // If the word is null, return an error message with 404 HTTP State
+            if (word is null)
+            {
+                var message = new JsonResult(new { message = "Please specify a word to map" });
+                return NotFound(message);
+            }
+
+            // Iterate over the word and map each character to it's IPA pronunciation
+            var res = new IPARequestResponse()
+            {
+                response = word.MapToIPA()
+            };
+            return Ok(res);
         }
 
-        // POST api/<MiscController>
-        [HttpPost, Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public void Post([FromBody] string value)
+        [HttpGet("GetSyllables/")]
+        public ActionResult<List<string>> GetSyllables(string word)
         {
+            // Maps a word to it's IPA pronunciation
+            // If the word is null, return an error message with 404 HTTP State
+            if (word is null)
+            {
+                var message = new JsonResult(new { message = "Please specify a word" });
+                return NotFound(message);
+            }
+
+            // Iterate over the word and map each character to it's IPA pronunciation
+            var res = word.GetSyllables();
+            return Ok(res);
         }
 
-        // PUT api/<MiscController>/5
-        [HttpPut("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public void Put(int id, [FromBody] string value)
+        [HttpGet("GetSyllablesString/")]
+        public ActionResult<IPARequestResponse> GetSyllablesString(string word)
         {
-        }
+            // Maps a word to it's IPA pronunciation
+            // If the word is null, return an error message with 404 HTTP State
+            if (word is null)
+            {
+                var message = new JsonResult(new { message = "Please specify a word" });
+                return NotFound(message);
+            }
 
-        // DELETE api/<MiscController>/5
-        [HttpDelete("{id}"), Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-        public void Delete(int id)
-        {
+            // Iterate over the word and map each character to it's IPA pronunciation
+            var res = word.GetSyllables();
+            var str = string.Join(".", res);
+            var response = new IPARequestResponse()
+            {
+                response = string.Join(".", res)
+            };
+            return Ok(response);
         }
     }
 

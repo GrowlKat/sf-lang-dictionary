@@ -18,3 +18,8 @@ public class TagsRequest
 {
     public required List<string> tags { get; set; }
 }
+
+public class IPARequestResponse
+{
+    public required string response { get; set; }
+}
